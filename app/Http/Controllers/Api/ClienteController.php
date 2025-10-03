@@ -213,54 +213,8 @@ class ClienteController extends Controller
         }
     }
 
-    /**
-     * Obtener estadísticas de clientes
-     */
-    public function stats(Request $request): JsonResponse
-    {
-        $user = $request->user();
-        $query = Cliente::query();
-        
-        // Si es vendedor, solo sus clientes
-        if (!$user->isAdmin()) {
-            $query->where('created_by_user_id', $user->id);
-        }
-        
-        $stats = [
-            'total' => (clone $query)->count(),
-            'activos' => (clone $query)->where('activo', true)->count(),
-            'inactivos' => (clone $query)->where('activo', false)->count(),
-            'por_tipo_identificacion' => (clone $query)
-                ->select('tipo_identificacion', DB::raw('count(*) as total'))
-                ->groupBy('tipo_identificacion')
-                ->get(),
-            'recientes' => (clone $query)
-                ->with('createdBy:id,username')
-                ->orderBy('fecha_ingreso', 'desc')
-                ->limit(5)
-                ->get(),
-            'este_mes' => (clone $query)
-                ->whereYear('fecha_ingreso', now()->year)
-                ->whereMonth('fecha_ingreso', now()->month)
-                ->count(),
-        ];
-        
-        // Si es admin, agregar stats por vendedor
-        if ($user->isAdmin()) {
-            $stats['por_vendedor'] = Cliente::select('created_by_user_id', DB::raw('count(*) as total'))
-                ->with('createdBy:id,username')
-                ->groupBy('created_by_user_id')
-                ->get()
-                ->map(function($item) {
-                    return [
-                        'vendedor' => $item->createdBy->username,
-                        'total' => $item->total,
-                    ];
-                });
-        }
-        
-        return response()->json($stats);
-    }
+ 
+   
 
     /**
      * Obtener tipos de identificación disponibles

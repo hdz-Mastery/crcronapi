@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ClienteController;
 use App\Http\Middleware\CheckRole;
@@ -32,14 +33,24 @@ Route::middleware(ValidateSession::class)->group(function () {
     Route::prefix('clientes')->group(function () {
         Route::get('/', [ClienteController::class, 'index']);
         Route::post('/', [ClienteController::class, 'store']);
-        Route::get('/stats', [ClienteController::class, 'stats']);
         Route::get('/tipos-identificacion', [ClienteController::class, 'tiposIdentificacion']);
         Route::get('/{cliente}', [ClienteController::class, 'show']);
         Route::put('/{cliente}', [ClienteController::class, 'update']);
         Route::patch('/{cliente}/toggle-active', [ClienteController::class, 'toggleActive']);
+        Route::delete('/{cliente}', [ClienteController::class, 'destroy']);
+    });
 
-        // Solo admins pueden eliminar
-        Route::delete('/{cliente}', [ClienteController::class, 'destroy'])
-            ->middleware(CheckRole::class . ':ADMINISTRADOR');
+        // Gestión de suscripciones (solo ADMINISTRADOR)
+    Route::middleware([CheckRole::class . ':ADMINISTRADOR'])->prefix('subscriptions')->group(function () {
+        Route::get('/', [SubscriptionController::class, 'index']);
+        Route::get('/stats', [SubscriptionController::class, 'estadisticas']);
+        Route::get('/metodos-pago', [SubscriptionController::class, 'metodosPago']);
+        Route::post('/verificar-vencimientos', [SubscriptionController::class, 'verificarVencimientos']);
+        Route::get('/{subscription}', [SubscriptionController::class, 'show']);
+        Route::post('/registrar-pago', [SubscriptionController::class, 'registrarPago']);
+        Route::post('/{subscription}/suspender', [SubscriptionController::class, 'suspender']);
+        Route::post('/{subscription}/reactivar', [SubscriptionController::class, 'reactivar']);
+        Route::post('/{subscription}/cancelar', [SubscriptionController::class, 'cancelar']);
+        Route::get('/{subscription}/historial-pagos', [SubscriptionController::class, 'historialPagos']);
     });
 });

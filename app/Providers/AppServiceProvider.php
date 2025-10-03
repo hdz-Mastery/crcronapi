@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\SubscriptionService;
 use App\Services\UserService;
 use App\Services\ClienteService;
 use Illuminate\Support\ServiceProvider;
@@ -12,6 +13,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(UserService::class);
         $this->app->singleton(ClienteService::class);
+        $this->app->singleton(SubscriptionService::class);
 
     }
 

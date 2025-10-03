@@ -83,4 +83,36 @@ class User extends Authenticatable
     {
         return $this->clientes()->where('activo', true);
     }
+
+    /**
+ * Relación: Usuario tiene una suscripción
+ */
+public function subscription()
+{
+    return $this->hasOne(Subscription::class);
+}
+
+/**
+ * Relación: Usuario tiene muchos pagos
+ */
+public function payments()
+{
+    return $this->hasMany(Payment::class);
+}
+
+/**
+ * Verificar si tiene suscripción activa
+ */
+public function tieneSuscripcionActiva(): bool
+{
+    return $this->subscription && $this->subscription->estaActiva();
+}
+
+/**
+ * Verificar si la suscripción está vencida
+ */
+public function suscripcionVencida(): bool
+{
+    return $this->subscription && $this->subscription->estaVencida();
+}
 }
