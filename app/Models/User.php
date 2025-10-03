@@ -39,8 +39,8 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id')
-                    ->withTimestamps()
-                    ->using(UserRole::class); // ← IMPORTANTE
+            ->withTimestamps()
+            ->using(UserRole::class); // ← IMPORTANTE
     }
 
     public function sessions()
@@ -66,5 +66,21 @@ class User extends Authenticatable
     public function isVendedor(): bool
     {
         return $this->hasRole('VENDEDOR');
+    }
+
+    /**
+     * Relación: Usuario tiene muchos clientes
+     */
+    public function clientes()
+    {
+        return $this->hasMany(Cliente::class, 'created_by_user_id');
+    }
+
+    /**
+     * Obtener clientes activos del usuario
+     */
+    public function clientesActivos()
+    {
+        return $this->clientes()->where('activo', true);
     }
 }
