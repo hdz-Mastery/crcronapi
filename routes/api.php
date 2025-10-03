@@ -21,7 +21,6 @@ Route::middleware(ValidateSession::class)->group(function () {
     Route::middleware([CheckRole::class . ':ADMINISTRADOR'])->prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/', [UserController::class, 'store']);
-        Route::get('/stats', [UserController::class, 'stats']);
         Route::get('/{user}', [UserController::class, 'show']);
         Route::put('/{user}', [UserController::class, 'update']);
         Route::patch('/{user}/toggle-active', [UserController::class, 'toggleActive']);

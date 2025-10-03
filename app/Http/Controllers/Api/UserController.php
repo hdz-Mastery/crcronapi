@@ -165,26 +165,5 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Obtener estadísticas de usuarios
-     */
-    public function stats(): JsonResponse
-    {
-        $stats = [
-            'total' => User::count(),
-            'active' => User::where('is_active', true)->count(),
-            'inactive' => User::where('is_active', false)->count(),
-            'by_role' => User::select('roles.name', DB::raw('count(*) as total'))
-                ->join('user_roles', 'users.id', '=', 'user_roles.user_id')
-                ->join('roles', 'user_roles.role_id', '=', 'roles.id')
-                ->groupBy('roles.name')
-                ->get(),
-            'recent' => User::with('roles')
-                ->orderBy('created_at', 'desc')
-                ->limit(5)
-                ->get(),
-        ];
-        
-        return response()->json($stats);
-    }
+
 }
